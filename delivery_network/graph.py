@@ -13,7 +13,7 @@ class Graph:
     nb_nodes: int
         The number of nodes.
     nb_edges: int
-        The number of edges.  test pour commit
+        The number of edges.
     """
 
     def __init__(self, nodes=[]):
