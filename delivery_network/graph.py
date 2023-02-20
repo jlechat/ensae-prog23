@@ -55,15 +55,41 @@ class Graph:
         dist: numeric (int or float), optional
             Distance between node1 and node2 on the edge. Default is 1.
         """
-        raise NotImplementedError
-    
+        if node1 not in self.nodes  : 
+            self.nodes.append(node1)
+            self.graph[node1]=[]
+            self.nb_nodes+=1
+        if node2 not in self.nodes : 
+            self.nodes.append(node2)
+            self.graph[node2]=[]
+            self.nb_nodes+=1
+        self.graph[node1]=self.graph[node1]+[[node2, power_min, dist]]
+        self.graph[node2]=self.graph[node2]+[[node1, power_min, dist]]
+        self.nb_edges+=1
+
 
     def get_path_with_power(self, src, dest, power):
         raise NotImplementedError
     
 
     def connected_components(self):
-        raise NotImplementedError
+        l=[] #listes vides qui contiendra les listes de composants connectés
+        nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
+
+        def components(node) :
+            comp=[node]
+            for i in self.graph[node] :
+                k=i[0]
+                if not nodes_v[k] :
+                    nodes_v[k]=True
+                    comp+=components(k)
+            return comp
+        
+        for k in self.nodes :
+            if not nodes_v[k] : l.append(components(k))
+
+        return l
+
 
 
     def connected_components_set(self):
@@ -100,4 +126,22 @@ def graph_from_file(filename):
     G: Graph
         An object of the class Graph with the graph from file_name.
     """
-    raise NotImplementedError
+    f=open(filename)
+    ligne=f.readline().split()
+    nb_node=int(ligne[0])
+    nb_edge=int(ligne[1])
+    nodes=[i for i in range(1, nb_node+1)]
+    G=Graph(nodes)
+    for i in range(nb_edge) :
+        ligne=f.readline().split()
+        node1=int(ligne[0])
+        node2=int(ligne[1])
+        power_min=int(ligne[2])
+        if len(ligne)==3 : G.add_edge(node1, node2, power_min)
+        else : 
+            dist=int(ligne[3])
+            G.add_edge(node1, node2, power_min, dist)
+    return G
+
+g = graph_from_file("input/network.00.in")
+print(g)
