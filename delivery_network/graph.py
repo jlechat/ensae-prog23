@@ -68,9 +68,30 @@ class Graph:
         self.nb_edges+=1
 
 
-    def get_path_with_power(self, src, dest, power):
-        raise NotImplementedError
-    
+    def get_path_with_power(self, src, dest, power): #complexité de O(n+m)
+        conexe=self.connected_components()
+        for i in range(len(self.connected_components())) :
+            if src in conexe[i] :
+                nodes_connexes=conexe[i]
+                if dest not in conexe[i] : return None
+
+        nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
+        nodes_v[src] = True
+        def parcours(node, chemin) :
+            if node == dest:
+                return chemin
+            for i in self.graph[node] :
+                k=i[0]
+                k_power = i[1]
+                if power >= k_power and not nodes_v[k]:
+                    nodes_v[k]=True
+                    return parcours(k, chemin+[k])
+            return None
+
+        return parcours(src, [src])
+
+
+
 
     def connected_components(self):
         l=[] #listes vides qui contiendra les listes de composants connectés
@@ -99,12 +120,25 @@ class Graph:
         """
         return set(map(frozenset, self.connected_components()))
     
-    def min_power(self, src, dest):
+    def min_power(self, src, dest,):
         """
         Should return path, min_power. 
         """
-        raise NotImplementedError
+        nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
+        nodes_v[src] = True
+        def parcours(node, chemin, p) :
+            if node == dest:
+                return chemin, p
+            for i in self.graph[node] :
+                k=i[0]
+                k_power = i[1]
+                if not nodes_v[k]:
+                    nodes_v[k]=True
+                    if k_power>p : p=k_power
+                    return parcours(k, chemin+[k], p)
+            return None
 
+        return parcours(src, [src],0)
 
 def graph_from_file(filename):
     """
@@ -142,6 +176,3 @@ def graph_from_file(filename):
             dist=int(ligne[3])
             G.add_edge(node1, node2, power_min, dist)
     return G
-
-g = graph_from_file("input/network.00.in")
-print(g)
