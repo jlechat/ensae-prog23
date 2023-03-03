@@ -86,6 +86,11 @@ class Graph:
                 if power >= k_power and not nodes_v[k]:
                     nodes_v[k]=True
                     return parcours(k, chemin+[k])
+                if i == self.graph[node][-1] and chemin[-1] != src :
+                    nodes_v[i[0]]=True
+                    chemin.pop()
+                    k = chemin[-1]
+                    return parcours(k, chemin)
             return None
 
         return parcours(src, [src])
@@ -120,9 +125,10 @@ class Graph:
         """
         return set(map(frozenset, self.connected_components()))
     
-    def min_power(self, src, dest,):
+    def min_power(self, src, dest):
         """
         Should return path, min_power. 
+        """
         """
         nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
         nodes_v[src] = True
@@ -139,6 +145,20 @@ class Graph:
             return None
 
         return parcours(src, [src],0)
+        """
+        a = 0
+        b = 1
+        def dicho(a, b) :
+            while b-a > 0.1 :
+                if self.get_path_with_power(src, dest, (a+b)/2) != None:
+                    b = (a+b)/2
+                else :
+                    a = (a+b)/2
+                dicho(a, b)
+            return self.get_path_with_power(src, dest, b), b
+        while self.get_path_with_power(src, dest, b) == None :
+            b = 2*b
+        return dicho(a, b)
 
 def graph_from_file(filename):
     """
