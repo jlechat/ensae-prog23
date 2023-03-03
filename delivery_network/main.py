@@ -1,18 +1,20 @@
-from graph import Graph, graph_from_file
+from graph import Graph, graph_from_file, graph_from_file_route
 from time import perf_counter
-from random import randrange, seed
-random.seed(4)
+from random import randrange, seed, choice
+seed(4)
 data_path = "input/"
-file_name = "routes.1.in"
-g = graph_from_file(data_path + file_name)
+file_name = "routes.2.in"
+g = graph_from_file_route(data_path + file_name)
 
-it=5
+it=1
 temps_tot=0
+liste=[l for l in g.graph.keys()]
 for i in range(it) :
-    a=randrange(min(g.graph.keys()), max(g.graph.keys()))
+    a=choice(liste)
+    b=choice(liste)
     time_begin=perf_counter()
 
-    g.get_path_with_power(src, dest, power)
+    g.get_path_with_power(a, b, 10)
 
     time_stop=perf_counter()
     print("Il s'est écoulé : ", time_stop-time_begin, "secondes.")

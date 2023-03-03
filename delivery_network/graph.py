@@ -69,11 +69,6 @@ class Graph:
 
 
     def get_path_with_power(self, src, dest, power): #complexité de O(n+m)
-        conexe=self.connected_components()
-        for i in range(len(self.connected_components())) :
-            if src in conexe[i] :
-                nodes_connexes=conexe[i]
-                if dest not in conexe[i] : return None
 
         nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
         nodes_v[src] = True
@@ -195,4 +190,43 @@ def graph_from_file(filename):
         else : 
             dist=int(ligne[3])
             G.add_edge(node1, node2, power_min, dist)
+    return G
+
+def graph_from_file_route(filename):
+    """
+    Reads a text file and returns the graph as an object of the Graph class, for files routes.
+
+    The file should have the following format: 
+        The first line of the file is 'n' the number of edges
+        The next m lines have 'node1 node2 power_min dist' or 'node1 node2 power_min' (if dist is missing, it will be set to 1 by default)
+        The nodes (node1, node2) should be named 1..n
+        All values are integers.
+
+    Parameters: 
+    -----------
+    filename: str
+        The name of the file
+
+    Outputs: 
+    -----------
+    G: Graph
+        An object of the class Graph with the graph from file_name.
+    """
+    f=open(filename)
+    ligne=f.readline().split()
+    nb_node=int(ligne[0])
+    nb_edge=int(ligne[0])
+    nodes=[i for i in range(1, nb_node+1)]
+    G=Graph(nodes)
+    for i in range(nb_edge) :
+        ligne=f.readline().split()
+        node1=int(ligne[0])
+        node2=int(ligne[1])
+        power_min=int(ligne[2])
+        if len(ligne)==3 : G.add_edge(node1, node2, power_min)
+        else : 
+            dist=int(ligne[3])
+            G.add_edge(node1, node2, power_min, dist)
+    G.graph={k: v for k, v in G.graph.items() if v != []}
+    G.nb_nodes=len(G.graph)
     return G
