@@ -69,6 +69,31 @@ class Graph:
 
 
     def get_path_with_power(self, src, dest, power): #complexité de O(n+m)
+        import math
+        visited = {node : False for node in self.nodes}
+        distance = {node : math.inf for node in self.nodes}
+        visited[src] = True
+        distance[src] = 0
+        k = src
+        path = [src]
+        while dest not in path : 
+            min_dist = math.inf
+            for node in self.graph[k] :
+                new_dist = distance[k] + node[1]
+                if not visited[node[0]]:
+                    if new_dist < distance[node[0]] and node[2] <= power :
+                        distance[node[0]] = new_dist
+                    if distance[node[0]] < min_dist :
+                        min_dist = distance[node[0]]
+                        min_node = node[0]
+            if min_dist != math.inf :
+                visited[min_node] = True
+                path.append(min_node)
+                k = min_node
+            else : return None      
+        return "path : " + str(path) + ", distance : " + str(distance[dest])
+"""
+    def get_path_with_power(self, src, dest, power): #complexité de O(n+m)
 
         nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
         nodes_v[src] = True
@@ -89,25 +114,31 @@ class Graph:
             return None
 
         return parcours(src, [src])
+"""
 
 
 
+    def connected_components(self) :
+        """Méthode qui permet d'obtenir une liste contenant les éléments connectés entre eux.
+        C'est à dire, les noeuds qui sont reliés entre eux.
 
-    def connected_components(self):
+        Returns:
+            Liste: liste de liste des composants connectés.
+        """
         l=[] #listes vides qui contiendra les listes de composants connectés
         nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
 
         def components(node) :
-            comp=[node]
-            for i in self.graph[node] :
+            comp=[node] #on initialise la liste avec le composant dont on veut connaitre ceux auxquels il est connecté
+            for i in self.graph[node] : #on parcourt tous les voisins du noeux "node"
                 k=i[0]
                 if not nodes_v[k] :
-                    nodes_v[k]=True
-                    comp+=components(k)
+                    nodes_v[k]=True #on indique que l'on vient de parcourir ce noeud
+                    comp+=components(k) #on utilise la récursivité pour obternir les voisins des voisins... et in fine cela retourne tous les élements connectés
             return comp
         
-        for k in self.nodes :
-            if not nodes_v[k] : l.append(components(k))
+        for k in self.nodes : #on parcourt tous les noeuds
+            if not nodes_v[k] : l.append(components(k)) #si le noeud n'a pas été parcouru on ajoute la liste de ses composants connectés
 
         return l
 
@@ -143,16 +174,17 @@ class Graph:
         """
         a = 0
         b = 1
-        def dicho(a, b) :
-            while b-a > 0.1 :
-                if self.get_path_with_power(src, dest, (a+b)/2) != None:
+        def dicho(a, b) : #on utilise la méthode de la dichotomie
+            while b-a > 0.1 : #on fixe le taux d'arret à 0.1
+                if self.get_path_with_power(src, dest, (a+b)/2) != None: #si la puissance est trop grande on ramène b au milieu du segment [a,b]
                     b = (a+b)/2
-                else :
+                else : #si la puissance est assez grande on ramène a au milieu du segment [a,b]
                     a = (a+b)/2
-                dicho(a, b)
+                dicho(a, b) #on utilise la récursivité pour réduire la taille de notre interval
             return self.get_path_with_power(src, dest, b), b
+
         while self.get_path_with_power(src, dest, b) == None :
-            b = 2*b
+            b = 2*b #on multiplie b par 2 jusqu'a temps que l'on puisse réaliser le chemin avec la puissance b
         return dicho(a, b)
 
 def graph_from_file(filename):
