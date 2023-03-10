@@ -68,8 +68,8 @@ class Graph:
         self.nb_edges+=1
 
 
-    def get_path_with_power(self, src, dest, power):
-        #Q5 : on implémente un Dijkstra
+    def get_path_with_power(self, src, dest, power): #Q5 : on implémente un Dijkstra 
+        #complexité : O(nb_noeuds*nb_voisins)
         import math
         visited = {node : False for node in self.nodes} #dictionnaire qui permet de savoir si le noeud a déjà été visité ou non
         distance = {node : math.inf for node in self.nodes} #on donne +l'infini comme valeur de distance à la source pour tous les points
@@ -220,6 +220,21 @@ def graph_from_file_route(filename):
     G: Graph
         An object of the class Graph with the graph from file_name.
     """
+    with open(filename, "r") as file:
+        n, m = map(int, file.readline().split())
+        g = Graph(range(1, n+1))
+        for _ in range(m):
+            edge = list(map(int, file.readline().split()))
+            if len(edge) == 3:
+                node1, node2, power_min = edge
+                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+            elif len(edge) == 4:
+                node1, node2, power_min, dist = edge
+                g.add_edge(node1, node2, power_min, dist)
+            else:
+                raise Exception("Format incorrect")
+    return g   
+    """
     f=open(filename)
     ligne=f.readline().split()
     nb_node=int(ligne[0])
@@ -237,4 +252,6 @@ def graph_from_file_route(filename):
             G.add_edge(node1, node2, power_min, dist)
     G.graph={k: v for k, v in G.graph.items() if v != []}
     G.nb_nodes=len(G.graph)
+    G.nb_edges=nb_edge
     return G
+"""
