@@ -93,9 +93,12 @@ class Graph:
             else : return None # si min_dist n'a pas bougé, c'est que la source et la destination ne sont pas reliées
         return "path : " + str(path) + ", distance : " + str(distance[dest])
 
-        """ ************** Question 3  #complexité en O(V+E) ***************
-        nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
+        """ ************** Question 3  #complexité en O(V+E) *************** """
+    def get_path(self, src, dest, power):
+        nodes_v={node : False for node in self.nodes} 
+        #dictionnaire qui permet de savoir si l'on est déjà passé par un point
         nodes_v[src] = True
+
         def parcours(node, chemin) :
             if node == dest:
                 return chemin
@@ -111,13 +114,14 @@ class Graph:
                     k = chemin[-1]
                     return parcours(k, chemin)
             return None
-        return parcours(src, [src])"""
+        return parcours(src, [src])
 
 
 
     def connected_components(self): #complexité en O(V(V+E))
         l=[] #liste vide qui contiendra les listes de composants connectés
-        nodes_v={node : False for node in self.nodes} #dictionnaire qui permet de savoir si l'on est déjà passé par un point
+        nodes_v={node : False for node in self.nodes} 
+        #dictionnaire qui permet de savoir si l'on est déjà passé par un point
 
         def components(node) :
             comp=[node]
